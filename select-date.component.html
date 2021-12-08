@@ -1,0 +1,81 @@
+<div class="h-100 d-flex flex-column">
+    <app-header [help]="true"></app-header>
+    <div class="row m-0 h-100">
+        <div class="col-12 d-none d-lg-block col-md-12 col-lg-4 p-0">
+
+            <app-doctor-information *ngIf="doctor" data-aos="fade-right" [doctorId]="doctor?.id!">
+            </app-doctor-information>
+
+            <div class="py-2">
+                <mat-divider class="divider my-2"></mat-divider>
+            </div>
+
+            <app-booking-summary *ngIf="bookingModel" [bookingModel]='bookingModel!'></app-booking-summary>
+        </div>
+        <div data-aos="fade-left" data-aos-anchor-placement="top-bottom" class="col-12 col-md whiteBackground p-0">
+            <div class="row m-0  mx-4">
+                <div class="col-12">
+                    <div class="mt-4 mx-auto">
+                        <app-stepper [currentStep]="2"></app-stepper>
+                    </div>
+                    <div class="mt-4 px-4">
+                        <h1 class="primaryText fw-bold">Elegir fecha y hora</h1>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="mt-4 px-4">
+                        <h4 class="primaryText fw-bold m-0">Selecciona día</h4>
+                    </div>
+                </div>
+                <div class="col-12 mx-4">
+                    <div class="row">
+                        <div class="col-12 col-lg-6">
+                            <mat-calendar [dateFilter]="dateFilter" *ngIf="diasHabiles">
+                            </mat-calendar>
+                        </div>
+                        <div class="d-none d-lg-block col-6">
+                            <mat-calendar [selected]="selectedDate" [startAt]="getNextMonth()" (selectedChange)="changeDate($event)">
+                            </mat-calendar>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12" *ngIf="selectedDate" data-aos="fade-up" data-aos-anchor-placement="top-bottom">
+                    <div class="mb-1 px-4">
+                        <h4 class="primaryText fw-bold m-0">Selecciona hora</h4>
+                    </div>
+                </div>
+                <div class="col-12 mx-4">
+                    <div class="row">
+                        <div *ngIf="selectedDate" data-aos="fade-up" data-aos-anchor-placement="top-bottom" class="DateContainer ms-4">
+                            <!-- Slider main container -->
+                            <swiper [config]='swiperConfig' (swiper)="onSwiper($event)" (slideChange)="onSlideChange()">
+                                <ng-template swiperSlide class="SwiperItem text-center" *ngFor="let time of timeList; let i = index">
+
+                                    <button *ngIf="selectedTime == time" mat-flat-button color='primary' class="SelectedTime" class="btn">{{time}}
+                                    </button>
+                                    <button *ngIf="selectedTime != time" mat-stroked-button (click)="setTime(time)" class="btn">{{time}}
+                                    </button>
+                                </ng-template>
+                            </swiper>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 d-flex justify-content-around my-4">
+                <div class="d-flex">
+                    <div matRipple matRippleColor="accent" class="iconContainer p-2" (click)="goBack()">
+                        <mat-icon>chevron_left</mat-icon>
+                    </div>
+                    <h4 class="my-auto ms-3 fw-bold backButtonTitle">Anterior</h4>
+                </div>
+                <div class="d-flex">
+                    <h4 class="my-auto me-3 fw-bold secondaryText">Siguente</h4>
+                    <div (click)="onClickNext()" matRipple matRippleColor="accent" class="iconContainer p-2">
+                        <mat-icon>chevron_right</mat-icon>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

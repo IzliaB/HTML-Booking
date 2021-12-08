@@ -1,0 +1,33 @@
+@import "../../../../shared/styles/colors.scss";
+
+.divider {
+    border-top-color: $white;
+}
+
+.DateContainer {
+    width: 100%;
+    max-width: 750px;
+}
+
+.SelectedTime {
+    border-color: $primary-color;
+    background-color: transparentize($color: $primary-color, $amount: 0.6);
+}
+
+::ng-deep {
+    .swiper-slide {
+        height: 100% !important;
+    }
+}
+
+.iconContainer {
+    border: 1px solid transparentize($color: $black, $amount: 0.8);
+    color: $dark-accent-text;
+    height: fit-content;
+    border-radius: 40px;
+    cursor: pointer;
+}
+
+.backButtonTitle {
+    color: $dark-accent-text;
+}
