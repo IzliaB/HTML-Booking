@@ -1,0 +1,37 @@
+@import "../../../../shared/styles/colors.scss";
+
+.divider {
+    border-top-color: $white;
+}
+
+.MapContainer {
+    width: 100%;
+    height: 100%;
+}
+
+.map {
+    width: 100%;
+    height: 350px;
+}
+
+.addressCard {
+    background-color: transparentize($color: $white, $amount: 0.2);
+    border: 1px solid transparentize($color: $black, $amount: 0.9);
+    cursor: pointer;
+}
+
+.titleAddress {
+    font-size: 18px;
+}
+
+.iconContainer {
+    border: 1px solid transparentize($color: $black, $amount: 0.8);
+    color: $dark-accent-text;
+    height: fit-content;
+    border-radius: 40px;
+    cursor: pointer;
+}
+
+.backButtonTitle {
+    color: $dark-accent-text;
+}

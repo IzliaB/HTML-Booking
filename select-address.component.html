@@ -1,0 +1,66 @@
+<div class="h-100 d-flex flex-column">
+    <app-header [help]="true"></app-header>
+    <div class="row m-0 h-100">
+        <div class="col-12 d-none d-lg-block col-md-12 col-lg-4 p-0">
+
+            <app-doctor-information *ngIf="doctor" data-aos="fade-right" [doctorId]="doctor?.id!">
+            </app-doctor-information>
+
+            <div class="py-2">
+                <mat-divider class="divider my-2"></mat-divider>
+            </div>
+
+            <app-booking-summary *ngIf="bookingModel" [bookingModel]='bookingModel!'></app-booking-summary>
+        </div>
+        <div data-aos="fade-left" data-aos-anchor-placement="top-bottom" class="col-12 col-md whiteBackground p-0">
+            <div class="row m-0  mx-4">
+                <div class="col-12">
+                    <div class="mt-4 mx-auto">
+                        <app-stepper [currentStep]="1"></app-stepper>
+                    </div>
+                    <div class="mt-4 px-4">
+                        <h1 class="primaryText fw-bold">Elegir Ubicación</h1>
+                    </div>
+                </div>
+                <div class="col-12 mx-4">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="MapContainer">
+                                <div class="map" id="map"></div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <mat-card (click)="zoomToMarker(address)" class="addressCard mb-3" *ngFor="let address of attentionSchedules">
+                                <mat-card-title-group>
+                                    <mat-card-title>
+                                        <mat-checkbox [checked]='selectedAddress == address?.place?.address' color="accent"><span class="titleAddress">{{address?.place?.name}}</span>
+                                        </mat-checkbox>
+                                    </mat-card-title>
+
+                                </mat-card-title-group>
+                                <mat-card-content>
+                                    {{address?.place?.address}}
+                                </mat-card-content>
+                            </mat-card>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 d-flex justify-content-around my-4">
+                <div class="d-flex">
+                    <div (click)="goBack()" matRipple matRippleColor="accent" class="iconContainer p-2">
+                        <mat-icon>chevron_left</mat-icon>
+                    </div>
+                    <h4 class="my-auto ms-3 fw-bold backButtonTitle">Anterior</h4>
+                </div>
+                <div class="d-flex">
+                    <h4 class="my-auto me-3 fw-bold secondaryText">Siguente</h4>
+                    <div (click)="onClickNext()" matRipple matRippleColor="accent" class="iconContainer p-2">
+                        <mat-icon>chevron_right</mat-icon>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
