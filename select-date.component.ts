@@ -16,14 +16,15 @@ import { Location } from '@angular/common';
 import { extendMoment } from 'moment-range';
 //import { extendMoment } from ''
 //import { split } from 'node_modules/moment-range-split/lib/'
+import { AffiliateAvailability } from '../../home/model/affiliateAvailabilityI';
 
 //moment.locale("es");
 
 Swiper.use([Navigation, Pagination]);
 
-const momentRange = extendMoment(moment);
+const range = extendMoment(moment);
 
-const { split: splitRange } = require('moment-range-split');
+const { split } = require('moment-range-split');
 @Component({
   selector: 'app-select-date',
   templateUrl: './select-date.component.html',
@@ -34,15 +35,15 @@ export class SelectDateComponent implements OnInit {
   timeList: string[] = ['8:00', '9:00', '12:00'];
   selectedTime: string = ""
   initialDate = new Date();
-  get selectedDate(): Date | undefined { return this.bookingService.bookingModel.appointmentDate };
+  get selectedDate(): any | undefined { return this.bookingService.bookingModel.appointmentDate };
 
   get bookingModel(): BookingModel | undefined { return this.bookingService.bookingModel };
 
-  get doctor(): DoctorModel | undefined { return this.bookingService.bookingModel.doctor };
+  get doctor(): DoctorModel | any { return this.bookingService.bookingModel.doctor };
 
   get address(): string | undefined { return this.bookingService.bookingModel.address };
 
-  get addressID(): string | undefined { return this.bookingService.bookingModel.address_id };
+  get addressID(): string | any { return this.bookingService.bookingModel.address_id };
 
   get schedules(): any | undefined { return this.bookingService.bookingModel.schedules };
 
@@ -50,6 +51,7 @@ export class SelectDateComponent implements OnInit {
 
 
   affiliate!: Affiliate;
+  availability!: AffiliateAvailability;
   selectedPlace: any;
   days!: string[];
   doctorId = "";
@@ -68,6 +70,11 @@ export class SelectDateComponent implements OnInit {
   disableDates: any = [];
   markedDates: any = {};
 
+  enabledSchedule: any = {};
+
+  str!: string;
+
+  horas!: moment.Moment[];
   diasHabiles!: any;
 
   attentionSchedule!: AttentionSchedule
@@ -109,206 +116,88 @@ export class SelectDateComponent implements OnInit {
   // }
 
   ngOnInit(): void {
-    //let minDate = moment().startOf("day").format("YYYY-MM-DD")
-
-
     console.log('object :>> ', this.bookingService.bookingModel);
     console.log('doctor :>> ', this.doctor);
     console.log('place :>>', this.address);
     this.bookingService.loadData();
-    //console.log('attentionSchedules :>>',  this.bookingService.bookingModel.affiliate?.attentionSchedules);
-    //Mapeo el objeto para obtener la hora de inicio y almaceno en variable start
-    // this.start = this.bookingService.bookingModel.affiliate?.attentionSchedules.map(schedule => schedule.schedules.map(initialTimeStr => initialTimeStr.initialTimeStr));
-    // console.log('start', this.start);
-    // //Mapeo el objeto para obtener la hora de inicio y almaceno en variable end
-    // this.end = this.bookingService.bookingModel.affiliate?.attentionSchedules.map(schedule => schedule.schedules.map(finalTimeStr => finalTimeStr.finalTimeStr) );
-    // console.log('end', this.end);
-    // //Formateo las horas
-    // let start = moment(this.start, "HH:mm");
-    // let end = moment(this.end, "HH:mm");
-    // //let diff = end.subtract(start);
-
-    // console.log('let start', start);
-    // console.log('let end', end);
-    // //intento obtener el rango
-    // let rangoHoras = momentRange.range(start, end);
-
-    // rangoHoras.start.format('HH:mm');
-    // rangoHoras.end.format('HH:mm');
-
-    // console.log('range start', start);
-    // console.log('range', rangoHoras);
-
-
-
-    //  this.selectedPlace = this.bookingService.bookingModel.affiliate?.attentionSchedules.filter(schedule => schedule.place._id === this.addressID)
-    console.log('hour :>>', this.bookingService.bookingModel.affiliate?.attentionSchedules.map(schedule => schedule.schedules.map(initialTimeStr => initialTimeStr.initialTimeStr)));
-    console.log('hourEnd :>>', this.bookingService.bookingModel.affiliate?.attentionSchedules.map(schedule => schedule.schedules.map(finalTimeStr => finalTimeStr.finalTimeStr)));
-    //   console.log('myplace :>>', this.selectedPlace);
-    // console.log('bandera', this.bookingService.bookingModel.days = this.attentionSchedule.schedules.filter(days => days.days === this.days));
-    //console.log('selectedPlace :>>', this.bookingService.bookingModel.affiliate?.attentionSchedules);
+    console.log('attentionSchedules :>>',  this.bookingService.bookingModel.affiliate?.attentionSchedules);
 
     this.selectedPlace = this.bookingService.bookingModel.affiliate?.attentionSchedules && this.bookingService.bookingModel.affiliate?.attentionSchedules.find((schedule) => schedule.place && schedule.place._id == this.addressID);
-
-    // this.workDays = this.bookingService.extra
-
-    console.log(this.selectedPlace);
-
-    // if(this.selectedPlace){
-    //   this.diasHabiles = this.getAvaibility();
-    // }
+    console.log('lugar', this.selectedPlace);
 
     this.diasHabiles = this.getAvaibility();
 
-    let day_name_full = moment().format('dddd');
-    let day_name_three_letter = moment().format('ddd');
-    let day1 = moment().format('dd');
+    this.hourFilter();
 
-    console.log('== To Get Day Name ==');
-    console.log("using format('dddd') =>", day_name_full);
-    console.log("using format('ddd') =>", day_name_three_letter);
-    console.log('dd', day1);
-    // console.log(this.diasHabiles);
+    //let date = this.date
 
-    // if (this.selectedPlace) {
-    // if (this._matCalendar) {
-    //   this._matCalendar.updateTodaysDate();
-    // }
-    // }
-
-    // let day = moment().day();
-    // console.log('day', day);
-
-    // this.disableDates = this.dateFilter(this.selectedPlace);
-    //const markedDates = {};
-
-    // this.disableDates.forEach((d: any) => {
-    //   this.markedDates[d.format("YYYY-MM-DD")] = {
-    //     disabled: true
-    //   };
-    // })
-
-    // if (this.selectedDate) {
-    //   this.markedDates[this._timeToString(this.selectedDate)] = { selected: true, marked: true };
-    // }
-
-    //this.fechasHabiles = this.getAvaibility();
-    //console.log('habil', this.fechasHabiles);
-  }
-
-  _timeToString = (time: any) => {
-    const date = new Date(time);
-    return moment(date).utc().startOf("day").format("YYYY-MM-DD");
+    //this.getAvailability(moment(date).format());
   }
 
   private getAvaibility() {
-   // return ['MO'];
-
+   //return ['Mo'];
     let workingDays: string[] = [];
     if(this.selectedPlace && this.selectedPlace.schedules){
       //Entonces recorre el arreglo una vez por cada elemento del array
       this.selectedPlace.schedules.forEach((schedule: { days: any[]; }, index: any) => {
         //Y devolve la iteracion del recorrido del array y almacenalo el nuevo elemento obtenido en workingDays
-        Object.keys(DaysOfWeek).forEach((key, index) => {
+        Object.keys(DaysOfWeek).forEach((key, index) => { //Lo trato como objeto DaysOfWeek
           if (schedule.days.some((day: string) => day == key)) {
             workingDays.some(alreadyAddedDay => alreadyAddedDay == key) ? null : workingDays.push(key)
           }
         })
       })
-      console.log('Dias Habiles', workingDays);
-     return workingDays;
+      //Ahora que ya se itero el array, convertimo la primera palabra del array a Mayuscula y lo demas en minus
+      //Ya que asi lo requiere la lib Moment JS
+      let days  = workingDays
+      var newArr = days.map(el => {
+        const temp = el.charAt(0).toUpperCase() + el.slice(1).toLowerCase();
+        return temp;
+      })
+      console.log('Dias Habiles', newArr);
+     return newArr;
     }
     else{
       return console.error('Ha ocurrido un error');
     }
   }
 
-
-  dateFilter = (date: Date) => {
-
-    // console.log(this.diasHabiles);
-    //console.log(this.diasHabiles);
-    return this.diasHabiles?.includes(moment(date).format('dd'));
-    //let day1 = moment().format('dd');
-    //  //Filtre el objeto para obtner los lugares seleccionados
-    //  // const schedule = this.bookingService.bookingModel.affiliate?.attentionSchedules && this.bookingService.bookingModel.affiliate?.attentionSchedules.find((schedule) => schedule.place && schedule.place._id == this.addressID)
-    //  // console.log('probando 1  :>>', schedule);
-    //  let workingDays: string[] = [];
-    //  //let currentDay = new Date;
-    // //  //Posicionamiento del dia
-    // //  currentDay.setDate(currentDay.getDate() - 1)
-    // //  if (date < currentDay) {
-    // //     return false;
-    // //   }
-    //   //Si se ha seleccionado un lugar
-    //   if(this.selectedPlace && this.selectedPlace.schedules){
-    //     //Entonces recorre el arreglo una vez por cada elemento del array
-    //     this.selectedPlace.schedules.forEach((schedule: { days: any[]; }, index: any) => {
-    //       //Y devolve la iteracion del recorrido del array y almacenalo el nuevo elemento obtenido en workingDays
-    //       Object.keys(DaysOfWeek).forEach((key, index) => {
-    //         if (schedule.days.some((day: string) => day == key)) {
-    //           workingDays.some(alreadyAddedDay => alreadyAddedDay == key) ? null : workingDays.push(key)
-    //         }
-    //       })
-    //     })
-    //    return true;
-    //   }
-    //   console.log('workingDays', workingDays);
-
-    //   let closedDays = Object.keys(DaysOfWeek).filter(key => !workingDays.includes(key));
-    //   console.log('closedDays', closedDays);
-
-
-    //   // Convierte 
-    //   const start = moment(this._timeToString(date || this.selectedDate || new Date()), "YYYY-MM-DD").startOf("M");
-    //   console.log('start', start);
-
-
-    //   const end = moment(this._timeToString(date || this.selectedDate || new Date()), "YYYY-MM-DD").endOf("M");
-    //   console.log('end', end);
-
-    //   const datesRange = momentRange.range(start, end);
-    //   console.log('datesRange', datesRange);
-
-    //return false;
-
+  getAvailability(date:any){
+    this.bookingService.getAffiliateAvailability(this.doctor?.id, this.addressID, date)
+      .subscribe(res => {
+       this.start = res.schedules.map(start => start.initialTimeStr);
+       this.end = res.schedules.map(end => end.finalTimeStr);
+       console.log('start1', this.start);
+       console.log('end1', this.end);
+      }, (error => {
+       console.error(error)
+      }))
   }
 
-  getSchedules = (selectedMonth: any) => {
-    const schedule = this.bookingService.bookingModel.affiliate?.attentionSchedules && this.bookingService.bookingModel.affiliate?.attentionSchedules.find((schedule) => schedule.place && schedule.place._id == this.addressID)
-    console.log('probando 1  :>>', schedule);
-    let workingDays: string[] = [];
-    if (schedule && schedule.schedules) {
-      schedule.schedules.forEach((hourss, index) => {
-        Object.keys(DaysOfWeek).forEach((key, index) => {
-          if (hourss.days.some(day => day == key)) {
-            workingDays.some(alreadyAddedDay => alreadyAddedDay == key) ? null : workingDays.push(key)
-          }
-        })
-      })
-    }
-    console.log('workingDays', workingDays);
+  hourFilter(){
 
-    let closedDays = Object.keys(DaysOfWeek).filter(key => !workingDays.includes(key));
+   // let date: Date;
+    let end: any;
+    let start: any;
+    end = this.bookingService.bookingModel.affiliate?.attentionSchedules.map(schedule => schedule.schedules.map(finalTimeStr => finalTimeStr.finalTimeStr))
+    start = this.bookingService.bookingModel.affiliate?.attentionSchedules.map(schedule => schedule.schedules.map(initialDate => initialDate.initialTimeStr))
+  
+    this.start = new Date(2021, 11, 8, end);
+    //console.log('starrrrrr', start);
+    this.end = new Date(2021, 11, 8, start);
 
-    console.log('closedDays', closedDays);
+    let rangoHoras = range(this.start, this.end);
+    console.log(rangoHoras);
 
-    // Convierte 
-    const start = moment(this._timeToString(selectedMonth || this.selectedDate || new Date()), "YYYY-MM-DD").startOf("M");
-    console.log('start', start);
+    this.horas = split(rangoHoras, "hours");
 
-    const end = moment(this._timeToString(selectedMonth || this.selectedDate || new Date()), "YYYY-MM-DD").endOf("M");
-    console.log('end', end);
+    console.log('horas probando', this.horas);
+  }
+  
 
-    const datesRange = momentRange.range(start, end);
-    console.log('datesRange', datesRange);
-
-    const disableDates = splitRange(datesRange, "days")
-      .map((r: any) => r.start).filter((d: any) => {
-        return closedDays.includes(isoWeek[d.isoWeekday() - 1]);
-      });
-    return { workingDays, closedDays, disableDates: disableDates }
-    //console.log('disable', disableDates);
+  dateFilter = (date: Date) => {
+    //Formateamos el dia con moment js
+    return this.diasHabiles?.includes(moment(date).format('dd'));
   }
 
   getDoctorId() {
@@ -316,7 +205,7 @@ export class SelectDateComponent implements OnInit {
     console.log('getDoctor :>> ', this.doctorId);
   };
 
-  changeDate = (date: Date) => {
+  changeDate = (date: any) => {
     console.log('date :>> ', date);
     this.bookingService.bookingModel.appointmentDate = date;
   }
@@ -324,6 +213,7 @@ export class SelectDateComponent implements OnInit {
   getNextMonth(): Date {
     var tempDate = new Date();
     var newDate = new Date(tempDate.setMonth(tempDate.getMonth() + 1));
+    //this.diasHabiles = newDate;
     return newDate;
   }
 
@@ -338,10 +228,11 @@ export class SelectDateComponent implements OnInit {
     }
   }
 
+  //Metodo que llena la iteracion
   setTime(time: string) {
     this.selectedTime = time;
 
-    let start = moment()
+   // let start = moment()
 
     //this.convertToDatetime();
   }
@@ -382,5 +273,3 @@ enum DaysOfWeek {
   "SA" = 6,
   "SU" = 7,
 }
-
-const isoWeek = ["MO", "TU", "WE", "TH", "FR", "SA", "SU"];
